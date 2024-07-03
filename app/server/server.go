@@ -91,7 +91,7 @@ func (s *Server) Port() int {
 // @Summary Local Weather Condition
 // @Description Get the local weather condition by entering your latitude/longitude coordinates.
 // @Success 200 {object} Response
-// @Failure 500 {string} internal service failure
+// @Failure 500 {string} Internal Service Failure
 // @Router /weather [get]
 func weatherHandler(s *service.WeatherService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -110,6 +110,6 @@ func weatherHandler(s *service.WeatherService) func(w http.ResponseWriter, r *ht
 		// 	http.Error(w, apperrors.InvalidRequest.Error(), http.StatusBadRequest)
 		// 	return
 		// }
-		s.GetWeather(inReq.Latitude, inReq.Longitude)
+		s.GetWeather(r.Context(), inReq.Latitude, inReq.Longitude)
 	}
 }
