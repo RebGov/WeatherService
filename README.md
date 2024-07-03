@@ -12,7 +12,7 @@ Enter your latitude/longitude in the request body and receive back the weather c
 ### RUN
 ``` WEATHER_ID={use-your-value} docker compose up --build```
 
-NOTE: `WEATHER_ID` is the app_id required by Open Weather Map. (See Dependencies)
+NOTE: `WEATHER_ID` is the app_id required by Open Weather Map. (See [Dependencies](https://github.com/RebGov/WeatherService/blob/feature-service-create2/README.md#dependencies))
 
 ### USE
 API takes in the following attributes and returns the weather condition in the given location.
