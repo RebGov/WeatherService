@@ -1,0 +1,25 @@
+linters:
+  # Disable all linters.
+  # Default: false
+  disable-all: true
+  # Enable specific linter
+  # https://golangci-lint.run/usage/linters/#enabled-by-default
+  enable:
+    - gocyclo
+    - wsl
+    - unconvert
+    - govet
+    - gosec
+    - misspell
+    - nakedret
+    - unparam
+    - prealloc
+    - gocritic
+    - gochecknoinits
+    - gochecknoglobals
+  # Enable all available linters.
+  # Default: false
+  enable-all: false
+  # Run only fast linters from enabled linters set (first run won't be fast)
+  # Default: false
+  fast: true
