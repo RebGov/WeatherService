@@ -25,12 +25,19 @@ type Server struct {
 	Addr   string
 }
 
-type Request struct {
-	Latitude  float32
-	Longitude float32
+type DecimalRequest struct {
+	Latitude  float64 `json:"latitude,omitempty"`
+	Longitude float64 `json:"longitude,omitempty"`
+}
+type NonDecimalRequest struct {
+	Latitude  string `json:"latitude,omitempty"`
+	Longitude string `json:"longitude,omitempty"`
 }
 type Response struct {
-	Message string
+	Message   string
+	Temp      string
+	Condition string
+	Wind      string
 }
 
 func NewServer(conf config.App, s *service.WeatherService) *Server {
@@ -95,7 +102,7 @@ func (s *Server) Port() int {
 // @Router /weather [get]
 func weatherHandler(s *service.WeatherService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var inReq Request
+		var inReq DecimalRequest
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -106,10 +113,24 @@ func weatherHandler(s *service.WeatherService) func(w http.ResponseWriter, r *ht
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		// if inReq.Latitude == 0 || inReq.Longitude == 0 {
-		// 	http.Error(w, apperrors.InvalidRequest.Error(), http.StatusBadRequest)
-		// 	return
-		// }
-		s.GetWeather(r.Context(), inReq.Latitude, inReq.Longitude)
+		msg := ""
+		if inReq.Latitude == 0 && inReq.Longitude == 0 {
+			msg = "Lat and Lon are set to zero. Are you enjoying the ocean? "
+		}
+		wResp, err := s.GetWeather(r.Context(), inReq.Latitude, inReq.Longitude)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		msg = fmt.Sprintf("%sOutside it is %s with %s. Wind is at %s.", msg, wResp.Temp, wResp.Condition, wResp.Wind)
+		json.NewEncoder(w).Encode(Response{
+			Message:   msg,
+			Temp:      string(wResp.Temp),
+			Condition: wResp.Condition,
+			Wind:      wResp.Wind,
+		})
+
 	}
 }
