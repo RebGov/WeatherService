@@ -1,0 +1,24 @@
+definitions:
+  server.Response:
+    properties:
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /weather:
+    get:
+      description: Get the local weather condition by entering your latitude/longitude
+        coordinates.
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Local Weather Condition
+swagger: "2.0"
