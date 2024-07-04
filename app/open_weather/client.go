@@ -86,6 +86,8 @@ func (c *Client) GetWeather(lat, long string) (*models.WeatherResponse, error) {
 		return data, nil
 	case 401:
 		return nil, apperrors.ErrInvalidOWMAppID
+	case 429:
+		return nil, apperrors.ErrTooManyRequests
 	default:
 		return nil, apperrors.ErrInternalServiceError
 	}

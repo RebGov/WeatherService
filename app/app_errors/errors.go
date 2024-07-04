@@ -11,6 +11,7 @@ var (
 	ErrInvalidRequest       = errors.New("latitude and longitude cannot be set to zero values")
 	ErrInvalidOWMAppID      = errors.New("config `WEATHER_APPID` is invalid")
 	ErrInternalServiceError = errors.New("internal service error")
+	ErrTooManyRequests      = errors.New("too many requests; limit reached")
 )
 
 func CreateMissingConfigError(e error, v string) error {
