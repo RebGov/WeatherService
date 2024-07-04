@@ -12,6 +12,7 @@ var (
 	ErrInvalidOWMAppID      = errors.New("config `WEATHER_APPID` is invalid")
 	ErrInternalServiceError = errors.New("internal service error")
 	ErrTooManyRequests      = errors.New("too many requests; limit reached")
+	ErrNotFound             = errors.New("weather for coordinates not found")
 )
 
 func CreateMissingConfigError(e error, v string) error {
