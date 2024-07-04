@@ -124,12 +124,12 @@ func weatherHandler(s *service.WeatherService) func(w http.ResponseWriter, r *ht
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		msg = fmt.Sprintf("%sOutside it is %s with %s. Wind is at %s.", msg, wResp.Temp, wResp.Condition, wResp.Wind)
+		msg = fmt.Sprintf("%sOutside it is %s with %s and %s.", msg, wResp.Temp, wResp.Wind, wResp.Condition)
 		json.NewEncoder(w).Encode(Response{
 			Message:   msg,
 			Temp:      string(wResp.Temp),
 			Condition: wResp.Condition,
-			Wind:      wResp.Wind,
+			Wind:      string(wResp.Wind),
 		})
 
 	}
