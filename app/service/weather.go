@@ -36,7 +36,9 @@ const (
 	storm          Wind        = "storm winds"
 	violentStorm   Wind        = "violent storm winds"
 	hurricane      Wind        = "hurricane/tornado winds"
-)
+
+}
+
 
 func (w *WeatherService) GetWeather(ctx context.Context, lat, lon float64) (WeatherCond, error) {
 	resp, err := w.WeatherClient.GetWeather(fmt.Sprintf("%f", lat), fmt.Sprintf("%f", lon))
