@@ -43,6 +43,8 @@ curl --location --request GET 'http://localhost:8001/weather' \
 
 ## Helpful pages
  - Need to get a latitude/Longitude for your area in decimal (DD) format? visit https://www.latlong.net/.
+ - Wind Speeds are defined by [Beaufort Wind Scale to describe wind speeds](https://www.weather.gov/mfl/beaufort)
+ - Temperature is based on: National Weather Service (NWS) terminology and general guidelines.
 
  ## Dependencies
  - Weather Service currently utilizes Open Weather Map for obtaining the weather condition at given latitude/longitude.
