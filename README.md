@@ -38,6 +38,16 @@ curl --location --request GET 'http://localhost:8001/weather' \
     "Longitude":-96.796211
 }'
 ```
+#### JSON Response Body:
+```
+{
+    "Message": "Outside it is extremely hot with light breeze and few clouds.",
+    "Temp": "extremely hot",
+    "Condition": "few clouds",
+    "Wind": "light breeze"
+}
+```
+
 ## Swagger
   - TBD: please see docs
 
