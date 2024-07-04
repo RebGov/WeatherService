@@ -63,7 +63,6 @@ func (c *Client) GetWeather(lat, long string) (*models.WeatherResponse, error) {
 	}
 	// Set headers if necessary
 	req.Header.Set("Content-Type", "application/json")
-	// log.Printf("Request: %+v", req)
 	// Send the request
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -76,14 +75,12 @@ func (c *Client) GetWeather(lat, long string) (*models.WeatherResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error reading response: %v", err)
 	}
-	// log.Printf("Body: `%s`", string(body))
 	var data *models.WeatherResponse
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		log.Printf("error on Unmarshall: %v", err)
 		return nil, fmt.Errorf("error unmarshalling response: %v", err)
 	}
-	log.Printf("unmarshal: %+v", data)
 	switch data.Cod {
 	case 200:
 		return data, nil
