@@ -30,8 +30,9 @@ API takes in the following attributes and returns the weather condition in the g
 }
 ```
 #### CURL Command
+If you change the PORT be sure to upate port in following:
 ```
-curl --location --request GET 'http://localhost:8001/weather' \
+curl --location --request GET 'http://localhost:8001/weather/get' \ 
 --header 'Content-Type: application/json' \
 --data '{
     "Latitude":32.777981,
