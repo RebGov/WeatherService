@@ -15,6 +15,7 @@ var (
 	ErrNotFound             = errors.New("weather for coordinates not found")
 )
 
+// CreateMissingConfigError combines the missing environment config and error together
 func CreateMissingConfigError(e error, v string) error {
 	return fmt.Errorf("%s for `%s`", e.Error(), v)
 }

@@ -1,7 +1,6 @@
 package openweather
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,34 +10,32 @@ import (
 	apperrors "weathersvc/app/app_errors"
 	"weathersvc/app/config"
 	"weathersvc/app/models"
+
+	"github.com/opentracing-contrib/go-stdlib/nethttp"
 )
 
-type Client struct {
+type Client interface {
+	ApiTest() error
+	GetWeather(lat, lon string) (*models.WeatherResponse, error)
+}
+type client struct {
 	client *http.Client
 	host   string
 	appId  string
 }
 
-func NewClient(conf *config.App) *Client {
-	tlsConfig := &tls.Config{
-		MinVersion: tls.VersionTLS12, // Set minimum TLS version to TLS 1.2
-		MaxVersion: tls.VersionTLS13, // Set maximum TLS version to TLS 1.3
+func NewClient(conf *config.App) Client {
+	httpClient := &http.Client{
+		Transport: &nethttp.Transport{},
 	}
-	// Create an HTTP client with the TLS configuration
-	transport := &http.Transport{
-		TLSClientConfig: tlsConfig,
-	}
-	client := &http.Client{
-		Transport: transport,
-	}
-	return &Client{
-		client: client,
+	return &client{
+		client: httpClient,
 		host:   conf.WeatherClientConfig.Host,
 		appId:  conf.WeatherClientConfig.AppID,
 	}
 }
 
-func (c *Client) ApiTest() error {
+func (c *client) ApiTest() error {
 	_, err := c.GetWeather("0", "0")
 	if err != nil {
 		return err
@@ -46,7 +43,7 @@ func (c *Client) ApiTest() error {
 	return nil
 }
 
-func (c *Client) GetWeather(lat, long string) (*models.WeatherResponse, error) {
+func (c *client) GetWeather(lat, long string) (*models.WeatherResponse, error) {
 	u, err := url.Parse(c.host)
 	if err != nil {
 		return nil, nil

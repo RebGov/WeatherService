@@ -1,4 +1,4 @@
-package app
+package cmd
 
 import (
 	"context"
@@ -9,11 +9,12 @@ import (
 )
 
 func Execute(ctx context.Context) error {
-	conf, err := config.NewApp(ctx)
+	conf, err := config.NewAppConfig().NewApp(ctx)
 	if err != nil {
 		return err
 	}
-	svc, err := service.NewService(ctx, &conf)
+	svc := service.NewService(ctx, conf)
+	err = svc.ValidateSvc(ctx)
 	if err != nil {
 		return err
 	}

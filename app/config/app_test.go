@@ -11,6 +11,7 @@ import (
 )
 
 func TestNewApp(t *testing.T) {
+	os.Clearenv()
 	ctx := context.Background()
 	t.Run("Should not fail to create NewApp when config items are not missing", func(t *testing.T) {
 		os.Setenv("WEATHER_ID", "fakeID")
@@ -27,7 +28,8 @@ func TestNewApp(t *testing.T) {
 			},
 			ServiceURL: "fakevalue",
 		}
-		resp, err := config.NewApp(ctx)
+		conf := config.NewAppConfig()
+		resp, err := conf.NewApp(ctx)
 		assert.NoError(t, err, "No errors expected for Config")
 		assert.EqualValues(t, expected.WeatherClientConfig.AppID, resp.AppID)
 		assert.EqualValues(t, expected.Port, resp.Port)
@@ -42,7 +44,7 @@ func TestNewApp(t *testing.T) {
 		os.Setenv("PORT", "8081")
 		os.Setenv("ENV", "testing")
 		os.Setenv("SERVICE_URL", "fakevalue")
-		resp, err := config.NewApp(ctx)
+		resp, err := config.NewAppConfig().NewApp(ctx)
 		assert.EqualError(t, err, apperrors.CreateMissingConfigError(apperrors.ErrMissingConfig, "Weather Host").Error(), "Missing config for weather host")
 		assert.Nil(t, resp)
 	})
@@ -52,7 +54,7 @@ func TestNewApp(t *testing.T) {
 		os.Setenv("PORT", "8081")
 		os.Setenv("ENV", "testing")
 		os.Setenv("SERVICE_URL", "fakevalue")
-		resp, err := config.NewApp(ctx)
+		resp, err := config.NewAppConfig().NewApp(ctx)
 		assert.EqualError(t, err, apperrors.CreateMissingConfigError(apperrors.ErrMissingConfig, "Weather App ID").Error(), "Missing config for weather host")
 		assert.Nil(t, resp)
 	})
@@ -71,7 +73,7 @@ func TestNewApp(t *testing.T) {
 			},
 			ServiceURL: "http://localhost",
 		}
-		resp, err := config.NewApp(ctx)
+		resp, err := config.NewAppConfig().NewApp(ctx)
 		assert.NoError(t, err, "No errors expected for Config")
 		assert.EqualValues(t, expected.WeatherClientConfig.AppID, resp.AppID)
 		assert.EqualValues(t, expected.WeatherClientConfig.Host, resp.Host)
@@ -96,7 +98,7 @@ func TestNewApp(t *testing.T) {
 			},
 			ServiceURL: "fakevalue",
 		}
-		resp, err := config.NewApp(ctx)
+		resp, err := config.NewAppConfig().NewApp(ctx)
 		assert.NoError(t, err, "No errors expected for Config")
 		assert.EqualValues(t, expected.WeatherClientConfig.AppID, resp.AppID)
 		assert.EqualValues(t, expected.Port, resp.Port)

@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"time"
+	apperrors "weathersvc/app/app_errors"
 	"weathersvc/app/config"
 	"weathersvc/app/service"
 	_ "weathersvc/docs"
@@ -18,7 +19,12 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-type Server struct {
+type Server interface {
+	Open() (err error)
+	Close() error
+	Port() int
+}
+type server struct {
 	ln     net.Listener
 	server *http.Server
 	router *mux.Router
@@ -40,11 +46,11 @@ type Response struct {
 	Wind      string
 }
 
-func NewServer(conf config.App, s *service.WeatherService) *Server {
+func NewServer(conf *config.App, s service.Service) Server {
 	r := mux.NewRouter()
-	r.HandleFunc("/weather", weatherHandler(s)).Methods("GET")
+	r.HandleFunc("/weather/get/", weatherHandler(s)).Methods("GET")
 	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
-	return &Server{
+	return &server{
 		server: &http.Server{
 			Handler:           r,
 			ReadHeaderTimeout: 3 * time.Second,
@@ -55,7 +61,7 @@ func NewServer(conf config.App, s *service.WeatherService) *Server {
 }
 
 // Open validates the server options and begins listening on the bind address.
-func (s *Server) Open() (err error) {
+func (s *server) Open() (err error) {
 	if s.ln, err = net.Listen("tcp", s.Addr); err != nil {
 		return fmt.Errorf("error listening, %w", err)
 	}
@@ -67,7 +73,7 @@ func (s *Server) Open() (err error) {
 }
 
 // Close gracefully shuts down the server.
-func (s *Server) Close() error {
+func (s *server) Close() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	return s.server.Shutdown(ctx)
@@ -75,7 +81,7 @@ func (s *Server) Close() error {
 
 // Port returns the TCP port for the running server.
 // This is useful in tests where we allocate a random port by using ":0".
-func (s *Server) Port() int {
+func (s *server) Port() int {
 	if s.ln == nil {
 		return 0
 	}
@@ -99,8 +105,11 @@ func (s *Server) Port() int {
 // @Description Get the local weather condition by entering your latitude/longitude coordinates.
 // @Success 200 {object} Response
 // @Failure 500 {string} Internal Service Failure
-// @Router /weather [get]
-func weatherHandler(s *service.WeatherService) func(w http.ResponseWriter, r *http.Request) {
+// @Failure 429 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Router /weather/get [get]
+func weatherHandler(s service.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var inReq DecimalRequest
 		body, err := io.ReadAll(r.Body)
@@ -119,7 +128,14 @@ func weatherHandler(s *service.WeatherService) func(w http.ResponseWriter, r *ht
 		}
 		wResp, err := s.GetWeather(r.Context(), inReq.Latitude, inReq.Longitude)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			switch err.Error() {
+			case apperrors.ErrTooManyRequests.Error():
+				http.Error(w, err.Error(), http.StatusTooManyRequests)
+			case apperrors.ErrNotFound.Error():
+				http.Error(w, err.Error(), http.StatusNotFound)
+			default:
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
