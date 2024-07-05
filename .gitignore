@@ -26,3 +26,4 @@ go.work.sum
 .env
 
 .coverage.out
+bin/tests.sh

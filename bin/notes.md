@@ -1,3 +1,10 @@
+# Test Coverage
+Last Tested: 20240705
+Current Results: **83.8%**
+- Create file with permissons: `bin/tests.sh`. Give correct permissions (chmod 755)
+- To run tests run command `bin/tests.sh` in the terminal.
+
+```
 #!/bin/bash
 
 # Set the coverage file
@@ -13,4 +20,4 @@ if [ -f $COVERAGE_FILE ]; then
 else
     echo "No coverage file found. Ensure tests are not failing."
 fi
-
+```
