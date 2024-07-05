@@ -6,19 +6,23 @@ import (
 	openweather "weathersvc/app/open_weather"
 )
 
-type WeatherService struct {
-	config        *config.App
-	WeatherClient *openweather.Client
+type Service interface {
+	GetWeather(ctx context.Context, lat, lon float64) (WeatherCond, error)
+	ValidateSvc(ctx context.Context) error
+}
+type service struct {
+	Config        *config.App
+	WeatherClient openweather.Client
 }
 
-func NewService(ctx context.Context, conf *config.App) (*WeatherService, error) {
-	client := openweather.NewClient(conf)
-	err := client.ApiTest()
-	if err != nil {
-		return nil, err
+func NewService(ctx context.Context, conf *config.App) Service {
+	cl := openweather.NewClient(conf)
+	return &service{
+		Config:        conf,
+		WeatherClient: cl,
 	}
-	return &WeatherService{
-		config:        conf,
-		WeatherClient: client,
-	}, nil
+}
+
+func (s *service) ValidateSvc(ctx context.Context) error {
+	return s.WeatherClient.ApiTest()
 }

@@ -38,7 +38,7 @@ const (
 	hurricane      Wind        = "hurricane/tornado winds"
 )
 
-func (w *WeatherService) GetWeather(ctx context.Context, lat, lon float64) (WeatherCond, error) {
+func (w *service) GetWeather(ctx context.Context, lat, lon float64) (WeatherCond, error) {
 	resp, err := w.WeatherClient.GetWeather(fmt.Sprintf("%f", lat), fmt.Sprintf("%f", lon))
 	if err != nil {
 		return WeatherCond{}, err
@@ -59,7 +59,7 @@ func (w *WeatherService) GetWeather(ctx context.Context, lat, lon float64) (Weat
 	}, nil
 }
 
-func (w *WeatherService) buildTempCondition(temp float64) Temperature {
+func (w *service) buildTempCondition(temp float64) Temperature {
 	switch {
 	case temp <= 32:
 		return subFreezing
@@ -69,7 +69,7 @@ func (w *WeatherService) buildTempCondition(temp float64) Temperature {
 		return cold
 	case temp > 60 && temp <= 75:
 		return moderate
-	case temp > 75 && temp <= 89:
+	case temp > 75 && temp <= 90:
 		return warm
 	case temp > 90 && temp < 100:
 		return hot
@@ -80,7 +80,7 @@ func (w *WeatherService) buildTempCondition(temp float64) Temperature {
 	}
 }
 
-func (w *WeatherService) buildWindCondition(s float64) Wind {
+func (w *service) buildWindCondition(s float64) Wind {
 	switch {
 	case s <= 0:
 		return calm
