@@ -20,7 +20,7 @@ API takes in the following attributes and returns the weather condition in the g
 - Longitude: float64,
 
 #### Endpoints:
-- http://localhost:8001/weather
+- http://localhost:8001/weather/get
    
 #### JSON Request Body:
 ```.json
