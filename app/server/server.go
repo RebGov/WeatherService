@@ -32,12 +32,8 @@ type server struct {
 }
 
 type DecimalRequest struct {
-	Latitude  float64 `json:"latitude,omitempty"`
-	Longitude float64 `json:"longitude,omitempty"`
-}
-type NonDecimalRequest struct {
-	Latitude  string `json:"latitude,omitempty"`
-	Longitude string `json:"longitude,omitempty"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
 }
 type Response struct {
 	Message   string
