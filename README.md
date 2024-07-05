@@ -72,7 +72,7 @@ curl --location --request GET 'http://localhost:8001/weather/get' \
     - `32.7767° N, 96.7970° W`
 
 ## Contact:
-- `bg.luv2code@gmail.com`
+- `becci.govert@gmail.com`
 
 ## Last Updated:
 - 2024-07-03
