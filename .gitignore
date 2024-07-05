@@ -21,9 +21,8 @@
 # Go workspace file
 go.work
 go.work.sum
-
-# env file
-.env
-
+# remove coverage file
 .coverage.out
-bin/tests.sh
+
+# env file (do not share secrets)
+.personal.env
