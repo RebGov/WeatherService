@@ -15,3 +15,11 @@ func TestErrors_CreateMissingConfigError(t *testing.T) {
 		assert.EqualError(t, got, expected.Error())
 	})
 }
+
+func TestErrors_CreateInvalidRequestErrors(t *testing.T) {
+	t.Run("", func(t *testing.T) {
+		expected := errors.New("invalid request: latitude is out of range")
+		got := apperrors.CreateInvalidRequestError("latitude is out of range")
+		assert.EqualError(t, got, expected.Error())
+	})
+}

@@ -12,4 +12,3 @@ services:
       - PORT=${PORT}
       - WEATHER_HOST=${WEATHER_HOST}
       - WEATHER_ID=${WEATHER_ID}
-      - SERVICE_URL=${SERVICE_URL}

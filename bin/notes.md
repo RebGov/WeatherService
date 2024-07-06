@@ -1,6 +1,6 @@
 # Test Coverage
 Last Tested: 20240705
-Current Results: **83.8%**
+Current Results: **85.6%**
 - Create file with permissons: `bin/tests.sh`. Give correct permissions (chmod 755)
 - To run tests run command `bin/tests.sh` in the terminal.
 

@@ -14,7 +14,6 @@ type App struct {
 	Port string
 	Env  string
 	WeatherClientConfig
-	ServiceURL string
 }
 
 type WeatherClientConfig struct {
@@ -41,10 +40,6 @@ func (a *appConfigImpl) NewApp(ctx context.Context) (*App, error) {
 	if wHost == "" {
 		return nil, appErr.CreateMissingConfigError("Weather Host")
 	}
-	svcUrl := os.Getenv("SERVICE_URL")
-	if svcUrl == "" {
-		svcUrl = "http://localhost"
-	}
 	return &App{
 		Port: port,
 		Env:  os.Getenv("ENV"),
@@ -52,6 +47,5 @@ func (a *appConfigImpl) NewApp(ctx context.Context) (*App, error) {
 			Host:  wHost,
 			AppID: wAppID,
 		},
-		ServiceURL: svcUrl,
 	}, nil
 }

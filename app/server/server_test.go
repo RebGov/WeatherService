@@ -27,7 +27,6 @@ func TestServer_NewServer(t *testing.T) {
 			Host:  "",
 			AppID: "fakeID",
 		},
-		ServiceURL: "fakevalue",
 	}
 	t.Run("Should build server", func(t *testing.T) {
 		got := NewServer(conf, svc)

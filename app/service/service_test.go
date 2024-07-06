@@ -21,7 +21,6 @@ func TestService_NewService(t *testing.T) {
 			Host:  "",
 			AppID: "fakeID",
 		},
-		ServiceURL: "fakevalue",
 	}
 	t.Run("Should not fail to create new service", func(t *testing.T) {
 		got := NewService(ctx, conf)
@@ -136,7 +135,6 @@ func TestSevice_ValidateSvc(t *testing.T) {
 				Host:  "item",
 				AppID: "item",
 			},
-			ServiceURL: "item",
 		},
 		WeatherClient: owm,
 	}
@@ -164,7 +162,6 @@ func TestService_GetWeather(t *testing.T) {
 				Host:  "item",
 				AppID: "item",
 			},
-			ServiceURL: "item",
 		},
 		WeatherClient: owm,
 	}
