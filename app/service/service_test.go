@@ -33,6 +33,10 @@ func TestService_buildTempCondition(t *testing.T) {
 		Config:        &config.App{},
 		WeatherClient: &ownMock.MockClient{},
 	}
+	t.Run("Should return 2`sub freezing`", func(t *testing.T) {
+		got := svc.buildTempCondition(-77.0)
+		assert.EqualValues(t, got, subFreezing)
+	})
 	t.Run("Should return `extremely hot`", func(t *testing.T) {
 		got := svc.buildTempCondition(101.0)
 		assert.EqualValues(t, got, extremeHot)

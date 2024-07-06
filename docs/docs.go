@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/weather": {
+        "/weather/get": {
             "get": {
                 "description": "Get the local weather condition by entering your latitude/longitude coordinates.",
                 "summary": "Local Weather Condition",
@@ -24,6 +24,24 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/server.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -40,7 +58,16 @@ const docTemplate = `{
         "server.Response": {
             "type": "object",
             "properties": {
+                "condition": {
+                    "type": "string"
+                },
                 "message": {
+                    "type": "string"
+                },
+                "temp": {
+                    "type": "string"
+                },
+                "wind": {
                     "type": "string"
                 }
             }

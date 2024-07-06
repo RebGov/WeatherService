@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log"
 )
 
 type WeatherCond struct {
@@ -38,8 +39,13 @@ const (
 	hurricane      Wind        = "hurricane/tornado winds"
 )
 
+// GetWeather ctx, latitude, longitude
 func (w *service) GetWeather(ctx context.Context, lat, lon float64) (WeatherCond, error) {
-	resp, err := w.WeatherClient.GetWeather(fmt.Sprintf("%f", lat), fmt.Sprintf("%f", lon))
+	log.Println("AM HERE")
+	sLat := fmt.Sprintf("%f", lat)
+	sLon := fmt.Sprintf("%f", lon)
+	log.Printf("Lat: %s, Lon:%s", sLat, sLon)
+	resp, err := w.WeatherClient.GetWeather(sLat, sLon)
 	if err != nil {
 		return WeatherCond{}, err
 	}

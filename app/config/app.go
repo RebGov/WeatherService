@@ -35,11 +35,11 @@ func (a *appConfigImpl) NewApp(ctx context.Context) (*App, error) {
 	}
 	wAppID := os.Getenv("WEATHER_ID")
 	if wAppID == "" {
-		return nil, appErr.CreateMissingConfigError(appErr.ErrMissingConfig, "Weather App ID")
+		return nil, appErr.CreateMissingConfigError("Weather App ID")
 	}
 	wHost := os.Getenv("WEATHER_HOST")
 	if wHost == "" {
-		return nil, appErr.CreateMissingConfigError(appErr.ErrMissingConfig, "Weather Host")
+		return nil, appErr.CreateMissingConfigError("Weather Host")
 	}
 	svcUrl := os.Getenv("SERVICE_URL")
 	if svcUrl == "" {

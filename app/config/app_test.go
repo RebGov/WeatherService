@@ -45,7 +45,7 @@ func TestNewApp(t *testing.T) {
 		os.Setenv("ENV", "testing")
 		os.Setenv("SERVICE_URL", "fakevalue")
 		resp, err := config.NewAppConfig().NewApp(ctx)
-		assert.EqualError(t, err, apperrors.CreateMissingConfigError(apperrors.ErrMissingConfig, "Weather Host").Error(), "Missing config for weather host")
+		assert.EqualError(t, err, apperrors.CreateMissingConfigError("Weather Host").Error(), "Missing config for weather host")
 		assert.Nil(t, resp)
 	})
 	t.Run("Should fail to create NewApp when config Weather AppID is missing", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestNewApp(t *testing.T) {
 		os.Setenv("ENV", "testing")
 		os.Setenv("SERVICE_URL", "fakevalue")
 		resp, err := config.NewAppConfig().NewApp(ctx)
-		assert.EqualError(t, err, apperrors.CreateMissingConfigError(apperrors.ErrMissingConfig, "Weather App ID").Error(), "Missing config for weather host")
+		assert.EqualError(t, err, apperrors.CreateMissingConfigError("Weather App ID").Error(), "Missing config for weather host")
 		assert.Nil(t, resp)
 	})
 	t.Run("Should not fail to create NewApp when config ServiceUrl is missing", func(t *testing.T) {

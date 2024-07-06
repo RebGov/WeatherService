@@ -40,7 +40,7 @@ func Test_GetWeather(t *testing.T) {
 		defer testServer.Close()
 		owmClient := NewClient(conf)
 		resp, err := owmClient.GetWeather("0", "0")
-		assert.EqualError(t, err, "error sending request: Get \"fake?appid=fakefake&lat=0&lon=0\": unsupported protocol scheme \"\"")
+		assert.EqualError(t, err, "error sending request: Get \"fake?appid=fakefake&lat=0&lon=0&units=imperial\": unsupported protocol scheme \"\"")
 		assert.Nil(t, resp)
 	})
 	t.Run("Should return 401", func(t *testing.T) {

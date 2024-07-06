@@ -7,6 +7,7 @@ import (
 )
 
 type Service interface {
+	// GetWeather ctx, latitude, longitude
 	GetWeather(ctx context.Context, lat, lon float64) (WeatherCond, error)
 	ValidateSvc(ctx context.Context) error
 }
