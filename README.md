@@ -74,10 +74,5 @@ curl --location --request GET 'http://localhost:8001/weather/get' \
 ## Contact:
 - `becci.govert@gmail.com`
 
-## Last Updated:
-- 2024-07-03
 
-
-
-
-© Becci Govert 2024-07-03
+-> Becci Govert 2024-07-06
