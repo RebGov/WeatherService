@@ -43,6 +43,7 @@ func (c *client) ApiTest() error {
 	return nil
 }
 
+// GetWeather takes in string: latitude longitude
 func (c *client) GetWeather(lat, long string) (*models.WeatherResponse, error) {
 	u, err := url.Parse(c.host)
 	if err != nil {
@@ -51,6 +52,7 @@ func (c *client) GetWeather(lat, long string) (*models.WeatherResponse, error) {
 	query := url.Values{}
 	query.Add("lat", lat)
 	query.Add("lon", long)
+	query.Add("units", "imperial")
 	query.Add("appid", c.appId)
 	u.RawQuery = query.Encode()
 	// Create the HTTP request
@@ -72,6 +74,7 @@ func (c *client) GetWeather(lat, long string) (*models.WeatherResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error reading response: %v", err)
 	}
+	log.Println(string(body))
 	var data *models.WeatherResponse
 	err = json.Unmarshal(body, &data)
 	if err != nil {

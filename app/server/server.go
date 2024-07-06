@@ -44,7 +44,7 @@ type Response struct {
 
 func NewServer(conf *config.App, s service.Service) Server {
 	r := mux.NewRouter()
-	r.HandleFunc("/weather/get/", weatherHandler(s)).Methods("GET")
+	r.HandleFunc("/weather/get", weatherHandler(s)).Methods("GET")
 	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 	return &server{
 		server: &http.Server{
@@ -101,9 +101,9 @@ func (s *server) Port() int {
 // @Description Get the local weather condition by entering your latitude/longitude coordinates.
 // @Success 200 {object} Response
 // @Failure 500 {string} Internal Service Failure
-// @Failure 429 {object} ErrorResponse
-// @Failure 401 {object} ErrorResponse
-// @Failure 404 {object} ErrorResponse
+// @Failure 429 {string} ErrorResponse: Limit reached
+// @Failure 404 {string} ErrorResponse: Coordinates not found
+// @Failure 400 {string} ErrorResponse: Request invalid and reason
 // @Router /weather/get [get]
 func weatherHandler(s service.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -113,14 +113,26 @@ func weatherHandler(s service.Service) func(w http.ResponseWriter, r *http.Reque
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		err = json.Unmarshal(body, &inReq)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		if body == nil {
+			http.Error(w, apperrors.ErrNoBody.Error(), http.StatusBadRequest)
 			return
 		}
-		msg := ""
+		err = json.Unmarshal(body, &inReq)
+		if err != nil {
+			http.Error(w, apperrors.ErrNoBody.Error(), http.StatusBadRequest)
+			return
+		}
 		if inReq.Latitude == 0 && inReq.Longitude == 0 {
-			msg = "Lat and Lon are set to zero. Are you enjoying the ocean? "
+			http.Error(w, apperrors.CreateInvalidRequestError("latitude and longitude missing or null").Error(), http.StatusBadRequest)
+			return
+		}
+		if !isValidLat(inReq.Latitude) {
+			http.Error(w, apperrors.CreateInvalidRequestError("latitude is out of range").Error(), http.StatusBadRequest)
+			return
+		}
+		if !isValidLon(inReq.Longitude) {
+			http.Error(w, apperrors.CreateInvalidRequestError("longitude is out of range").Error(), http.StatusBadRequest)
+			return
 		}
 		wResp, err := s.GetWeather(r.Context(), inReq.Latitude, inReq.Longitude)
 		if err != nil {
@@ -136,7 +148,7 @@ func weatherHandler(s service.Service) func(w http.ResponseWriter, r *http.Reque
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		msg = fmt.Sprintf("%sOutside it is %s with %s and %s.", msg, wResp.Temp, wResp.Wind, wResp.Condition)
+		msg := fmt.Sprintf("Outside it is %s with %s and %s.", wResp.Temp, wResp.Wind, wResp.Condition)
 		json.NewEncoder(w).Encode(Response{
 			Message:   msg,
 			Temp:      string(wResp.Temp),
@@ -145,4 +157,17 @@ func weatherHandler(s service.Service) func(w http.ResponseWriter, r *http.Reque
 		})
 
 	}
+}
+
+func isValidLat(l float64) bool {
+	if l < -90 || l > 90 {
+		return false
+	}
+	return true
+}
+func isValidLon(l float64) bool {
+	if l < -180 || l > 180 {
+		return false
+	}
+	return true
 }

@@ -27,7 +27,6 @@ func TestServer_NewServer(t *testing.T) {
 			Host:  "",
 			AppID: "fakeID",
 		},
-		ServiceURL: "fakevalue",
 	}
 	t.Run("Should build server", func(t *testing.T) {
 		got := NewServer(conf, svc)
@@ -46,8 +45,8 @@ func TestGetWeatherHandler(t *testing.T) {
 			Wind:      "calm",
 		}, nil)
 		reqBody := DecimalRequest{
-			Latitude:  0,
-			Longitude: 0,
+			Latitude:  -1,
+			Longitude: 1,
 		}
 		body, err := json.Marshal(reqBody)
 		assert.NoError(t, err)
@@ -55,14 +54,10 @@ func TestGetWeatherHandler(t *testing.T) {
 		req.Header.Set("Content-Type", "application/json")
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(weatherHandler(mockService))
-
-		// Call the handler with the request and response recorder
 		handler.ServeHTTP(rr, req)
-		// handler.ServeHTTP(rr, req)
 		var respBody Response
 		err = json.NewDecoder(rr.Body).Decode(&respBody)
 		assert.NoError(t, err)
-		// assert.Equal(t, expectedMsg, respBody.Message)
 		assert.Equal(t, "hot", respBody.Temp)
 		assert.Equal(t, "few clouds", respBody.Condition)
 		assert.Equal(t, "calm", respBody.Wind)
@@ -74,8 +69,8 @@ func TestGetWeatherHandler(t *testing.T) {
 			Wind:      "",
 		}, apperrors.ErrInternalServiceError)
 		reqBody := DecimalRequest{
-			Latitude:  0,
-			Longitude: 0,
+			Latitude:  1,
+			Longitude: 1,
 		}
 		body, err := json.Marshal(reqBody)
 		assert.NoError(t, err)
@@ -94,8 +89,8 @@ func TestGetWeatherHandler(t *testing.T) {
 			Wind:      "",
 		}, apperrors.ErrTooManyRequests)
 		reqBody := DecimalRequest{
-			Latitude:  0,
-			Longitude: 0,
+			Latitude:  1,
+			Longitude: 1,
 		}
 		body, err := json.Marshal(reqBody)
 		assert.NoError(t, err)
@@ -114,8 +109,8 @@ func TestGetWeatherHandler(t *testing.T) {
 			Wind:      "",
 		}, apperrors.ErrNotFound)
 		reqBody := DecimalRequest{
-			Latitude:  0,
-			Longitude: 0,
+			Latitude:  -1,
+			Longitude: 1,
 		}
 		body, err := json.Marshal(reqBody)
 		assert.NoError(t, err)
@@ -126,6 +121,61 @@ func TestGetWeatherHandler(t *testing.T) {
 		handler.ServeHTTP(rr, req)
 		assert.Equal(t, http.StatusNotFound, rr.Code)
 		assert.Contains(t, rr.Body.String(), "coordinates not found")
+	})
+
+	t.Run("Should fail 400 for lat and lon set to zero", func(t *testing.T) {
+		reqBody := DecimalRequest{
+			Latitude:  0,
+			Longitude: 0,
+		}
+		body, err := json.Marshal(reqBody)
+		assert.NoError(t, err)
+		req := httptest.NewRequest("GET", "/weather/get/", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(weatherHandler(mockService))
+		handler.ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusBadRequest, rr.Code)
+		assert.Contains(t, rr.Body.String(), "invalid request: latitude and longitude missing or null")
+	})
+	t.Run("Should fail 400 for lat out of range", func(t *testing.T) {
+		reqBody := DecimalRequest{
+			Latitude:  -90.01,
+			Longitude: 0,
+		}
+		body, err := json.Marshal(reqBody)
+		assert.NoError(t, err)
+		req := httptest.NewRequest("GET", "/weather/get/", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(weatherHandler(mockService))
+		handler.ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusBadRequest, rr.Code)
+		assert.Contains(t, rr.Body.String(), "invalid request: latitude is out of range")
+	})
+	t.Run("Should fail 400 for lon out of range", func(t *testing.T) {
+		reqBody := DecimalRequest{
+			Latitude:  90,
+			Longitude: -180.01,
+		}
+		body, err := json.Marshal(reqBody)
+		assert.NoError(t, err)
+		req := httptest.NewRequest("GET", "/weather/get/", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(weatherHandler(mockService))
+		handler.ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusBadRequest, rr.Code)
+		assert.Contains(t, rr.Body.String(), "invalid request: longitude is out of range")
+	})
+	t.Run("Should fail 400 missing body", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/weather/get/", bytes.NewBuffer([]byte{}))
+		req.Header.Set("Content-Type", "application/json")
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(weatherHandler(mockService))
+		handler.ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusBadRequest, rr.Code)
+		assert.Contains(t, rr.Body.String(), "request body missing: see `https://github.com/RebGov/WeatherService")
 	})
 }
 

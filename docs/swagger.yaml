@@ -1,13 +1,19 @@
 definitions:
   server.Response:
     properties:
+      condition:
+        type: string
       message:
+        type: string
+      temp:
+        type: string
+      wind:
         type: string
     type: object
 info:
   contact: {}
 paths:
-  /weather:
+  /weather/get:
     get:
       description: Get the local weather condition by entering your latitude/longitude
         coordinates.
@@ -16,6 +22,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/server.Response'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "429":
+          description: Too Many Requests
+          schema:
+            type: string
         "500":
           description: Internal Server Error
           schema:

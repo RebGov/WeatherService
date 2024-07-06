@@ -21,7 +21,6 @@ func TestService_NewService(t *testing.T) {
 			Host:  "",
 			AppID: "fakeID",
 		},
-		ServiceURL: "fakevalue",
 	}
 	t.Run("Should not fail to create new service", func(t *testing.T) {
 		got := NewService(ctx, conf)
@@ -33,6 +32,10 @@ func TestService_buildTempCondition(t *testing.T) {
 		Config:        &config.App{},
 		WeatherClient: &ownMock.MockClient{},
 	}
+	t.Run("Should return 2`sub freezing`", func(t *testing.T) {
+		got := svc.buildTempCondition(-77.0)
+		assert.EqualValues(t, got, subFreezing)
+	})
 	t.Run("Should return `extremely hot`", func(t *testing.T) {
 		got := svc.buildTempCondition(101.0)
 		assert.EqualValues(t, got, extremeHot)
@@ -132,7 +135,6 @@ func TestSevice_ValidateSvc(t *testing.T) {
 				Host:  "item",
 				AppID: "item",
 			},
-			ServiceURL: "item",
 		},
 		WeatherClient: owm,
 	}
@@ -160,7 +162,6 @@ func TestService_GetWeather(t *testing.T) {
 				Host:  "item",
 				AppID: "item",
 			},
-			ServiceURL: "item",
 		},
 		WeatherClient: owm,
 	}
