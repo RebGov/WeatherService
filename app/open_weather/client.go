@@ -63,8 +63,7 @@ func (c *client) GetWeather(lat, long string) (*models.WeatherResponse, error) {
 	// Set headers if necessary
 	req.Header.Set("Content-Type", "application/json")
 	// Send the request
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -74,7 +73,6 @@ func (c *client) GetWeather(lat, long string) (*models.WeatherResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error reading response: %v", err)
 	}
-	log.Println(string(body))
 	var data *models.WeatherResponse
 	err = json.Unmarshal(body, &data)
 	if err != nil {
